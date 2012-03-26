@@ -17,16 +17,15 @@
 # limitations under the License.
 #
 
-if platform?("ubuntu") && node['platform_version'].to_f == 8.04
-  apt_repository "hardy-rsyslog-ppa" do
-    uri "http://ppa.launchpad.net/a.bono/rsyslog/ubuntu"
-    distribution "hardy"
-    components ["main"]
-    keyserver "keyserver.ubuntu.com"
-    key "C0061A4A"
-    action :add
-    notifies :run, "execute[apt-get update]", :immediately
-  end
+apt_repository "hardy-rsyslog-ppa" do
+  uri "http://ppa.launchpad.net/a.bono/rsyslog/ubuntu"
+  distribution "hardy"
+  components ["main"]
+  keyserver "keyserver.ubuntu.com"
+  key "C0061A4A"
+  action :add
+  only_if { platform?("ubuntu") && node['platform_version'].to_f == 8.04 }
+  notifies :run, "execute[apt-get update]", :immediately
 end
 
 package "rsyslog" do
@@ -60,12 +59,11 @@ template "/etc/rsyslog.conf" do
   notifies :restart, "service[rsyslog]"
 end
 
-if platform?("ubuntu")
-  template "/etc/rsyslog.d/50-default.conf" do
-    source "50-default.conf.erb"
-    backup false
-    owner "root"
-    group "root"
-    mode 0644
-  end
+template "/etc/rsyslog.d/50-default.conf" do
+  source "50-default.conf.erb"
+  backup false
+  owner "root"
+  group "root"
+  mode 0644
+  only_if { platform?("ubuntu") }
 end
