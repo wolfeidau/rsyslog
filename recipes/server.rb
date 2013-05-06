@@ -26,15 +26,30 @@ directory node['rsyslog']['log_dir'] do
   mode 0755
 end
 
-template "/etc/rsyslog.d/35-server-per-host.conf" do
-  source "35-server-per-host.conf.erb"
-  backup false
-  variables(
-    :log_dir => node['rsyslog']['log_dir'],
-    :per_host_dir => node['rsyslog']['per_host_dir']
-  )
-  mode 0644
-  notifies :restart, "service[#{node['rsyslog']['service_name']}]"
+if  node['rsyslog']['heroku_enabled']
+  template "/etc/rsyslog.d/35-server-per-host.conf" do
+    source "10-heroku.conf.erb"
+    backup false
+    variables(
+      :log_dir => node['rsyslog']['log_dir']
+    )
+    mode 0644
+    notifies :restart, "service[#{node['rsyslog']['service_name']}]"
+  end
+end
+
+
+if node['rsyslog']['per_host_dir_enabled']
+  template "/etc/rsyslog.d/35-server-per-host.conf" do
+    source "35-server-per-host.conf.erb"
+    backup false
+    variables(
+      :log_dir => node['rsyslog']['log_dir'],
+      :per_host_dir => node['rsyslog']['per_host_dir']
+    )
+    mode 0644
+    notifies :restart, "service[#{node['rsyslog']['service_name']}]"
+  end
 end
 
 file "/etc/rsyslog.d/remote.conf" do
