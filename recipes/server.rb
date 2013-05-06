@@ -27,7 +27,7 @@ directory node['rsyslog']['log_dir'] do
 end
 
 if  node['rsyslog']['heroku_enabled']
-  template "/etc/rsyslog.d/35-server-per-host.conf" do
+  template "/etc/rsyslog.d/10-heroku.conf" do
     source "10-heroku.conf.erb"
     backup false
     variables(
