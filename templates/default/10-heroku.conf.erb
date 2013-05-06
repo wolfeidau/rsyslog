@@ -1,2 +1,4 @@
+# This is configured to shift all logs recieved from 10. addresses which heroku uses, 
+# into a file. 
 if $fromhost-ip startswith '10' then <%= @log_dir %>/heroku/syslog.log
 &amp; ~
